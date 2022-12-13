@@ -41,4 +41,4 @@ exports.postTypeDefs = `
     unlikePost(post_id: Int! like_id: Int!): PostResponse!
   }
 `;
-//# sourceMappingURL=typeDefs.js.map
+//# sourceMappingURL=typedefs.js.map

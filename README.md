@@ -9,10 +9,28 @@ This is the GraphQL Apollo Server that serves as the backend for the Social Medi
 
 # Getting Started
 
+Clone this repo 
+```bash
+git clone https://github.com/HelixHEX/exposure-server
+```
+
 Install the required dependencies by running
 ```bash
-npm install
+yarn install
 ```
+
+## Environment Variables
+
+The server uses environment variables to configure the database connection. The following environment variables are required:
+
+- `DATABASE_URL` - The database connection string. This is used to connect to the database. The connection string should be in the format `postgresql://<username>:<password>@<host>:<port>/<database_name>?schema=<schema>`. The schema is optional. If not specified, the default schema is `public`. The `database_name` in this case it will be `exposure` or whatever you decide to name it.
+
+- `PORT` - The port on which the server will listen for requests. The default value is `4000`.
+
+- `JWT_SECRET` - The secret used to sign the JWT tokens. This is used to authenticate requests to the server.
+
+- `REFRESH_TOKEN_SECRET` - The secret used to sign the refresh tokens. This is used to authenticate requests to the server. (Feature not implemented yet)
+
 
 ## Database
 
@@ -27,18 +45,6 @@ To create the database, run. This will create a database named `exposure` in you
 ```bash
 npx prisma migrate dev --name init
 ```
-
-## Environment Variables
-
-The server uses environment variables to configure the database connection. The following environment variables are required:
-
-- `DATABASE_URL` - The database connection string. This is used to connect to the database. The connection string should be in the format `postgresql://<username>:<password>@<host>:<port>/<database_name>?schema=<schema>`. The schema is optional. If not specified, the default schema is `public`. The `database_name` in this case will be `exposure`.
-
-- `PORT` - The port on which the server will listen for requests. The default value is `4000`.
-
-- `JWT_SECRET` - The secret used to sign the JWT tokens. This is used to authenticate requests to the server.
-
-- `REFRESH_TOKEN_SECRET` - The secret used to sign the refresh tokens. This is used to authenticate requests to the server. (Feature not implemented yet)
 
 ## Server
 

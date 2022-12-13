@@ -20,7 +20,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
         schema: schema_1.schema,
     });
     const { url } = yield (0, standalone_1.startStandaloneServer)(server, {
-        listen: { port: 4000 },
+        listen: { port: process.env.PORT || 4000 },
         context: ({ req }) => __awaiter(void 0, void 0, void 0, function* () {
             const token = req.headers.authorization || "";
             const user = (0, getUser_1.getUser)(token);

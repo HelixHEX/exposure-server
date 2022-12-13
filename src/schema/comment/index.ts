@@ -1,4 +1,4 @@
 import { commentResolver } from "./resolver";
-import { commentTypeDefs } from "./typeDefs";
+import { commentTypeDefs } from "./typedefs";
 
 export { commentResolver, commentTypeDefs };
