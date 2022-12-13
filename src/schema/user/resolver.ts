@@ -18,13 +18,23 @@ export const userResolver = {
         },
       });
     },
+    currentUser: (
+      _parent: any,
+      _args: any,
+      { context: { user } }: { context: Context }
+    ) => {
+      if (!user) {
+        return null;
+      }
+      return user;
+    },
   },
   Mutation: {
     // create account
     createUser: async (
       _parent: any,
       args: { email: string; password: string; profile_id: number },
-      { context: { prisma, res } }: { context: Context }
+      { context: { prisma } }: { context: Context }
     ) => {
       // check if email is already taken
       const user = await prisma.user.findUnique({
@@ -79,33 +89,44 @@ export const userResolver = {
       });
 
       // create token
-      console.log("process.env.JWT_SECRET");
-      const accessToken = jwt.sign(
-        { userId: newUser.id },
-        process.env.JWT_SECRET,
+      let tokenData = {
+        id: newUser.id,
+        email: newUser.email,
+        profile_id: newUser.profile_id,
+      };
+      const refreshToken = jwt.sign(
+        tokenData,
+        "process.env.REFRESH_TOKEN_SECRET",
         {
           expiresIn: "7d",
         }
       );
 
-      res.cookie("access-token", accessToken, {
-        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      const token = jwt.sign(tokenData, process.env.JWT_SECRET, {
+        expiresIn: "15m",
       });
+
       let { password, ...rest } = newUser;
 
-      // send token and user back to the client
-      return rest;
+      return {
+        user: rest,
+        token,
+        refreshToken,
+      };
     },
 
     // login with email and password
     login: async (
       _parent: any,
       args: { email: string; password: string },
-      { context: { res, req, prisma } }: { context: Context }
+      { context: { prisma } }: { context: Context }
     ) => {
       const user = await prisma.user.findUnique({
         where: {
           email: args.email,
+        },
+        include: {
+          profile: true,
         },
       });
       if (!user) {
@@ -116,24 +137,31 @@ export const userResolver = {
       if (!valid) {
         throw new Error("Incorrect email or password");
       }
+
+      let tokenData = {
+        id: user.id,
+        email: user.email,
+        profile: user.profile,
+      };
+
       const refreshToken = jwt.sign(
-        { userId: user.id },
+        tokenData,
         "process.env.REFRESH_TOKEN_SECRET",
         {
           expiresIn: "7d",
         }
       );
 
-      const accessToken = jwt.sign(
-        { userId: user.id },
-        "process.env.JWT_SECRET"
-      );
+      const token = jwt.sign(tokenData, process.env.JWT_SECRET, {
+        expiresIn: "30d",
+      });
 
       let { password, ...rest } = user;
 
       return {
         user: rest,
-        token: accessToken,
+        token,
+        refreshToken,
       };
     },
   },

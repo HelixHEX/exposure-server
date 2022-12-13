@@ -15,6 +15,31 @@ exports.profileResolver = {
         profiles: (_parent, _args, { context }) => {
             return context.prisma.profile.findMany();
         },
+        profile: (_parent, args, { context }) => __awaiter(void 0, void 0, void 0, function* () {
+            var _a;
+            if (args.me) {
+                let profile = yield context.prisma.profile.findUnique({
+                    where: {
+                        id: (_a = context.user) === null || _a === void 0 ? void 0 : _a.profile.id
+                    },
+                    include: {
+                        post: true,
+                    }
+                });
+                return profile;
+            }
+            else {
+                let profile = yield context.prisma.profile.findUnique({
+                    where: {
+                        username: args.username,
+                    },
+                    include: {
+                        post: true,
+                    }
+                });
+                return profile;
+            }
+        })
     },
     Mutation: {
         createProfile: (_parent, args, { context: { prisma } }) => __awaiter(void 0, void 0, void 0, function* () {
@@ -34,15 +59,6 @@ exports.profileResolver = {
                 }
             });
         }),
-    },
-    Profile: {
-        user: (parent, _args, { context }) => {
-            return context.prisma.user.findUnique({
-                where: {
-                    id: parent.user_id,
-                },
-            });
-        },
     },
 };
 //# sourceMappingURL=resolver.js.map

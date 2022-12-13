@@ -5,6 +5,33 @@ export const profileResolver = {
     profiles: (_parent: any, _args: any, { context }: { context: Context }) => {
       return context.prisma.profile.findMany();
     },
+    profile: async (
+      _parent: any,
+      args: { username: string, me: boolean },
+      { context }: { context: Context }
+    ) => {
+      if (args.me) {
+        let profile = await context.prisma.profile.findUnique({
+          where: {
+            id: context.user?.profile.id
+          },
+          include: {
+          post: true,
+        }
+        })
+        return profile
+      } else {
+        let profile = await context.prisma.profile.findUnique({
+        where: {
+          username: args.username,
+        },
+        include: {
+          post: true,
+        }
+      });
+      return profile
+      }
+    }
   },
   Mutation: {
     createProfile: async (
@@ -33,13 +60,14 @@ export const profileResolver = {
     },
   },
 
-  Profile: {
-    user: (parent: any, _args: any, { context }: { context: Context }) => {
-      return context.prisma.user.findUnique({
-        where: {
-          id: parent.user_id,
-        },
-      });
-    },
-  },
+  //Potential security issue
+  // Profile: {
+  //   user: (parent: any, _args: any, { context }: { context: Context }) => {
+  //     return context.prisma.user.findUnique({
+  //       where: {
+  //         id: parent.user_id,
+  //       },
+  //     });
+  //   },
+  // },
 };

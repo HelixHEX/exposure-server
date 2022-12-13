@@ -12,10 +12,25 @@ exports.userTypeDefs = `
   type Query {
     user(id: Int!): User
     users: [User!]!
+    currentUser: LoggedInUser
+  }
+
+  type LoggedInUser {
+    id: ID!
+    email: String!
+    profile: Profile
   }
 
   type SigninResponse {
     token: String!
+    refreshToken: String!
+    user: User!
+    error: String
+  }
+
+  type SignupResponse {
+    token: String!
+    refreshToken: String!
     user: User!
     error: String
   }

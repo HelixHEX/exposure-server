@@ -13,15 +13,20 @@ const server_1 = require("@apollo/server");
 const standalone_1 = require("@apollo/server/standalone");
 const context_1 = require("./context");
 const schema_1 = require("./schema");
-require('dotenv-safe').config();
+const getUser_1 = require("./utils/getUser");
+require("dotenv-safe").config();
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const server = new server_1.ApolloServer({
         schema: schema_1.schema,
     });
     const { url } = yield (0, standalone_1.startStandaloneServer)(server, {
         listen: { port: 4000 },
-        context: () => __awaiter(void 0, void 0, void 0, function* () {
-            return { context: context_1.context };
+        context: ({ req }) => __awaiter(void 0, void 0, void 0, function* () {
+            const token = req.headers.authorization || "";
+            const user = (0, getUser_1.getUser)(token);
+            return {
+                context: Object.assign(Object.assign({}, context_1.context), { user }),
+            };
         }),
     });
     console.log(`🚀 Server ready at ${url}`);

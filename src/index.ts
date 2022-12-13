@@ -8,8 +8,9 @@ import { startStandaloneServer } from "@apollo/server/standalone";
 // import { json } from "body-parser";
 import { Context, context } from "./context";
 import { schema } from "./schema";
+import { getUser } from "./utils/getUser";
 
-require('dotenv-safe').config();
+require("dotenv-safe").config();
 
 interface MyContext {
   //prisma client
@@ -23,8 +24,15 @@ const main = async () => {
   // console.log(process.env.JWT_SECRET)
   const { url } = await startStandaloneServer(server, {
     listen: { port: 4000 },
-    context: async () => {
-      return { context };
+    context: async ({ req }) => {
+      const token = req.headers.authorization || "";
+      const user = getUser(token);
+      return {
+        context: {
+          ...context,
+          user,
+        },
+      };
     },
   });
 

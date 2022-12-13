@@ -61,9 +61,15 @@ exports.userResolver = {
                 },
             });
         },
+        currentUser: (_parent, _args, { context: { user } }) => {
+            if (!user) {
+                return null;
+            }
+            return user;
+        },
     },
     Mutation: {
-        createUser: (_parent, args, { context: { prisma, res } }) => __awaiter(void 0, void 0, void 0, function* () {
+        createUser: (_parent, args, { context: { prisma } }) => __awaiter(void 0, void 0, void 0, function* () {
             const user = yield prisma.user.findUnique({
                 where: {
                     email: args.email,
@@ -102,20 +108,31 @@ exports.userResolver = {
                     },
                 },
             });
-            console.log("process.env.JWT_SECRET");
-            const accessToken = jsonwebtoken_1.default.sign({ userId: newUser.id }, process.env.JWT_SECRET, {
+            let tokenData = {
+                id: newUser.id,
+                email: newUser.email,
+                profile_id: newUser.profile_id,
+            };
+            const refreshToken = jsonwebtoken_1.default.sign(tokenData, "process.env.REFRESH_TOKEN_SECRET", {
                 expiresIn: "7d",
             });
-            res.cookie("access-token", accessToken, {
-                expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            const token = jsonwebtoken_1.default.sign(tokenData, process.env.JWT_SECRET, {
+                expiresIn: "15m",
             });
             let { password } = newUser, rest = __rest(newUser, ["password"]);
-            return rest;
+            return {
+                user: rest,
+                token,
+                refreshToken,
+            };
         }),
-        login: (_parent, args, { context: { res, req, prisma } }) => __awaiter(void 0, void 0, void 0, function* () {
+        login: (_parent, args, { context: { prisma } }) => __awaiter(void 0, void 0, void 0, function* () {
             const user = yield prisma.user.findUnique({
                 where: {
                     email: args.email,
+                },
+                include: {
+                    profile: true,
                 },
             });
             if (!user) {
@@ -125,14 +142,22 @@ exports.userResolver = {
             if (!valid) {
                 throw new Error("Incorrect email or password");
             }
-            const refreshToken = jsonwebtoken_1.default.sign({ userId: user.id }, "process.env.REFRESH_TOKEN_SECRET", {
+            let tokenData = {
+                id: user.id,
+                email: user.email,
+                profile: user.profile,
+            };
+            const refreshToken = jsonwebtoken_1.default.sign(tokenData, "process.env.REFRESH_TOKEN_SECRET", {
                 expiresIn: "7d",
             });
-            const accessToken = jsonwebtoken_1.default.sign({ userId: user.id }, "process.env.JWT_SECRET");
+            const token = jsonwebtoken_1.default.sign(tokenData, process.env.JWT_SECRET, {
+                expiresIn: "30d",
+            });
             let { password } = user, rest = __rest(user, ["password"]);
             return {
                 user: rest,
-                token: accessToken,
+                token,
+                refreshToken,
             };
         }),
     },
