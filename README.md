@@ -1,6 +1,6 @@
 # Social Media App Backend
 
-This is the GraphQL Apollo Server that serves as the backend for the Social Media App. The server exposes a GraphQL API that allows clients to perform operations such as querying and mutating data.
+This is the GraphQL Apollo Server that serves as the backend for the Social Media App. The server exposes a GraphQL API that allows clients to perform operations such as querying and mutating data. Feel free to check out this [*blog post*](https://eliaswambugu.medium.com/another-instagram-clone-9b93c3d4b494) I made about the app.
 
 # Requirements
 - [Node.js](https://nodejs.org/en/)
