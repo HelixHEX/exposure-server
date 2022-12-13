@@ -25,4 +25,4 @@ exports.commentTypeDefs = `
     createComment(comment: String!, post_id: Int!): CommentResponse!
   }
 `;
-//# sourceMappingURL=typeDefs.js.map
+//# sourceMappingURL=typedefs.js.map
