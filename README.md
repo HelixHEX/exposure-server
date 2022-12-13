@@ -87,4 +87,4 @@ mutation CreatePost($description: String!, $image_url: String!) {
 }
 ```
 
-# Refer to the schema.graphql [file](https://github.com/HelixHEX/exposure-app/blob/main/graphql/schema.gql) for a complete list of the available operations.
+# Refer to the schema.graphql [*file*](https://github.com/HelixHEX/exposure-app/blob/main/graphql/schema.gql) for a complete list of the available operations.
